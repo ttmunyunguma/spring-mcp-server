@@ -20,4 +20,9 @@ public class SpringMcpServerApplication {
     public ToolCallbackProvider weatherTools(WeatherService weatherService){
         return MethodToolCallbackProvider.builder().toolObjects(weatherService).build();
     }
+
+    @Bean
+    public ToolCallbackProvider coinMarketCapTools(CoinMarketCapService coinMarketCapService){
+        return MethodToolCallbackProvider.builder().toolObjects(coinMarketCapService).build();
+    }
 }
