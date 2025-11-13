@@ -6,7 +6,6 @@ public class CoinMarketCapResponse {
     private Status status;
     private List<CryptoCurrency> data;
 
-    // Getters and Setters
     public Status getStatus() {
         return status;
     }

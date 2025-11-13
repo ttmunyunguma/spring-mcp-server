@@ -19,7 +19,7 @@ public class Status {
 
     private String notice;
 
-    // Getters and Setters
+
     public LocalDateTime getTimestamp() {
         return timestamp;
     }

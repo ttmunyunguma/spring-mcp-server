@@ -1,62 +1,43 @@
-package com.cuius.mcpserver;
+package com.cuius.mcpserver.service;
 
 import com.cuius.mcpserver.dto.CoinMarketCapResponse;
 import com.cuius.mcpserver.dto.CryptoCurrency;
 import org.springframework.ai.tool.annotation.Tool;
+import org.springframework.ai.tool.annotation.ToolParam;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 @Service
-public class CoinMarketCapService {
-    private static final Logger logger = Logger.getLogger(CoinMarketCapService.class.getName());
-    private static final String BASE_URL = "https://pro-api.coinmarketcap.com";
-    private static final String LISTINGS_ENDPOINT = "/v1/cryptocurrency/listings/latest";
+public class CoinMarketCapToolService {
+    private static final Logger logger = Logger.getLogger(CoinMarketCapToolService.class.getName());
 
-    private final WebClient webClient;
     private final List<CryptoCurrency> cachedCryptocurrencies;
+    private final CoinMarketCapWebService webService;
 
-    @Value("${coinmarketcap.api.key:your-api-key-here}")
-    private String apiKey;
+    @Value("${coinmarketcap.api.listings.default-limit}")
+    private Integer LISTINGS_DEFAULT_LIMIT;
 
-    public CoinMarketCapService(WebClient.Builder webClientBuilder) {
-        this.webClient = webClientBuilder.baseUrl(BASE_URL).build();
+    public CoinMarketCapToolService(CoinMarketCapWebService webService) {
         this.cachedCryptocurrencies = new ArrayList<>();
+        this.webService = webService;
     }
 
     @Tool(name = "getLatestCryptoListings", description = "Fetches the latest cryptocurrency listings from CoinMarketCap API and stores them in memory")
-    public String getLatestCryptoListings(Integer limit) {
+    public String getLatestCryptoListings(@ToolParam(required = false, description = "max  number of listings") Integer limit) {
         try {
             logger.info("Fetching latest cryptocurrency listings with limit: " + limit);
 
             if (limit == null || limit <= 0) {
-                limit = 10; // Default to 10
+                limit = LISTINGS_DEFAULT_LIMIT;
             }
-
-            CoinMarketCapResponse response = webClient.get()
-                    .uri(uriBuilder -> uriBuilder
-                            .path(LISTINGS_ENDPOINT)
-                            .queryParam("limit", limit)
-                            .queryParam("convert", "USD")
-                            .build())
-                    .header("X-CMC_PRO_API_KEY", apiKey)
-                    .header("Accept", "application/json")
-                    .retrieve()
-                    .bodyToMono(CoinMarketCapResponse.class)
-                    .onErrorResume(e -> {
-                        logger.severe("Error fetching cryptocurrency data: " + e.getMessage());
-                        return Mono.empty();
-                    })
-                    .block();
+            CoinMarketCapResponse response = webService.getCoinMarketCapWebResponse(limit);
 
             if (response != null && response.getData() != null) {
-                // Clear and update cached data
                 cachedCryptocurrencies.clear();
                 cachedCryptocurrencies.addAll(response.getData());
 
@@ -65,7 +46,7 @@ public class CoinMarketCapService {
                 return "Successfully fetched " + cachedCryptocurrencies.size() + " cryptocurrencies. " +
                        "Total in cache: " + getCachedCount();
             } else {
-                return "Failed to fetch cryptocurrency data. Please check your API key and configuration.";
+                return "Failed to fetch cryptocurrency data. Please check your configuration.";
             }
         } catch (Exception e) {
             logger.severe("Exception in getLatestCryptoListings: " + e.getMessage());
@@ -81,7 +62,7 @@ public class CoinMarketCapService {
     }
 
     @Tool(name = "getCryptoBySymbol", description = "Retrieves a specific cryptocurrency from the cache by its symbol (e.g., BTC, ETH)")
-    public String getCryptoBySymbol(String symbol) {
+    public String getCryptoBySymbol(@ToolParam(required = true, description = "the symbol to use for searching crypto") String symbol) {
         logger.info("Searching for cryptocurrency with symbol: " + symbol);
 
         if (symbol == null || symbol.trim().isEmpty()) {
@@ -91,14 +72,14 @@ public class CoinMarketCapService {
         return cachedCryptocurrencies.stream()
                 .filter(crypto -> crypto.getSymbol().equalsIgnoreCase(symbol.trim()))
                 .findFirst()
-                .map(crypto -> formatCryptoInfo(crypto))
+                .map(this::formatCryptoInfo)
                 .orElse("Cryptocurrency with symbol '" + symbol + "' not found in cache");
     }
 
     @Tool(name = "getTopCryptos", description = "Returns the top N cryptocurrencies by market cap rank from the cache")
-    public String getTopCryptos(Integer count) {
+    public String getTopCryptos(@ToolParam(required = false, description = "number of listings to return")Integer count) {
         if (count == null || count <= 0) {
-            count = 10;
+            count = LISTINGS_DEFAULT_LIMIT;
         }
 
         logger.info("Getting top " + count + " cryptocurrencies");
@@ -108,12 +89,9 @@ public class CoinMarketCapService {
         }
 
         List<CryptoCurrency> topCryptos = cachedCryptocurrencies.stream()
-                .sorted((c1, c2) -> Integer.compare(
-                        c1.getCmcRank() != null ? c1.getCmcRank() : Integer.MAX_VALUE,
-                        c2.getCmcRank() != null ? c2.getCmcRank() : Integer.MAX_VALUE
-                ))
+                .sorted(Comparator.comparingInt(c -> c.getCmcRank() != null ? c.getCmcRank() : Integer.MAX_VALUE))
                 .limit(count)
-                .collect(Collectors.toList());
+                .toList();
 
         StringBuilder result = new StringBuilder("Top " + topCryptos.size() + " Cryptocurrencies:\n");
         for (CryptoCurrency crypto : topCryptos) {
@@ -124,7 +102,7 @@ public class CoinMarketCapService {
     }
 
     @Tool(name = "searchCryptoByName", description = "Searches for cryptocurrencies in the cache by name (case-insensitive partial match)")
-    public String searchCryptoByName(String name) {
+    public String searchCryptoByName(@ToolParam(description = "name of crypto to search match") String name) {
         logger.info("Searching for cryptocurrencies with name containing: " + name);
 
         if (name == null || name.trim().isEmpty()) {
@@ -133,8 +111,8 @@ public class CoinMarketCapService {
 
         List<CryptoCurrency> matches = cachedCryptocurrencies.stream()
                 .filter(crypto -> crypto.getName().toLowerCase().contains(name.toLowerCase().trim()))
-                .limit(10) // Limit to 10 results
-                .collect(Collectors.toList());
+                .limit(LISTINGS_DEFAULT_LIMIT)
+                .toList();
 
         if (matches.isEmpty()) {
             return "No cryptocurrencies found matching '" + name + "'";
@@ -148,13 +126,8 @@ public class CoinMarketCapService {
         return result.toString();
     }
 
-    // Helper methods
     private int getCachedCount() {
         return cachedCryptocurrencies.size();
-    }
-
-    public List<CryptoCurrency> getCachedCryptocurrencies() {
-        return new ArrayList<>(cachedCryptocurrencies);
     }
 
     private String formatCryptoInfo(CryptoCurrency crypto) {

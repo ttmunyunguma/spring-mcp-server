@@ -1,5 +1,6 @@
 package com.cuius.mcpserver;
 
+import com.cuius.mcpserver.service.CoinMarketCapToolService;
 import org.springframework.ai.tool.ToolCallbackProvider;
 import org.springframework.ai.tool.method.MethodToolCallbackProvider;
 import org.springframework.boot.SpringApplication;
@@ -17,12 +18,8 @@ public class SpringMcpServerApplication {
     }
 
     @Bean
-    public ToolCallbackProvider weatherTools(WeatherService weatherService){
-        return MethodToolCallbackProvider.builder().toolObjects(weatherService).build();
-    }
-
-    @Bean
-    public ToolCallbackProvider coinMarketCapTools(CoinMarketCapService coinMarketCapService){
-        return MethodToolCallbackProvider.builder().toolObjects(coinMarketCapService).build();
+    public ToolCallbackProvider coinMarketCapTools(CoinMarketCapToolService coinMarketCapToolService){
+        logger.info("Registering Tool: CoinMarketCapTool");
+        return MethodToolCallbackProvider.builder().toolObjects(coinMarketCapToolService).build();
     }
 }

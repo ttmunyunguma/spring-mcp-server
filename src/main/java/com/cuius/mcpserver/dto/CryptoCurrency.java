@@ -36,7 +36,6 @@ public class CryptoCurrency {
 
     private Map<String, Quote> quote;
 
-    // Getters and Setters
     public Long getId() {
         return id;
     }

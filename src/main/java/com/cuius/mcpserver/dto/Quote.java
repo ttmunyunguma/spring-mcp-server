@@ -42,7 +42,6 @@ public class Quote {
     @JsonProperty("last_updated")
     private LocalDateTime lastUpdated;
 
-    // Getters and Setters
     public Double getPrice() {
         return price;
     }
