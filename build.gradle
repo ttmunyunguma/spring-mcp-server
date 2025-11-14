@@ -6,7 +6,7 @@ plugins {
 
 group = 'com.cuius'
 version = '0.0.1'
-description = 'spring-mcp-server'
+description = 'coinmarketcap-mcp-server'
 
 java {
     toolchain {
