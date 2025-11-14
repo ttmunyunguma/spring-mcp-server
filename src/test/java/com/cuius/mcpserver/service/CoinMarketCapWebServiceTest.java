@@ -13,6 +13,7 @@ import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@Tag("integration")
 @DisplayName("CoinMarketCapWebService Integration Tests")
 class CoinMarketCapWebServiceTest {
 
@@ -25,7 +26,6 @@ class CoinMarketCapWebServiceTest {
         mockWebServer = new MockWebServer();
         mockWebServer.start(9187);
 
-        String baseUrl = mockWebServer.url("/").toString();
         WebClient.Builder webClientBuilder = WebClient.builder();
         webService = new CoinMarketCapWebService(webClientBuilder, TEST_BASE_URL);
 

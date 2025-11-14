@@ -31,7 +31,7 @@ jobs:
         run: ./gradlew clean
 
       - name: Run all tests
-        run: ./gradlew test --info
+        run: ./gradlew allTests --info
 
       - name: Build project
         run: ./gradlew build

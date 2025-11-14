@@ -4,7 +4,11 @@ on:
   pull_request:
     branches:
       - master
-      - main
+
+permissions:
+  contents: read
+  checks: write
+  pull-requests: write
 
 jobs:
   test:
@@ -26,9 +30,6 @@ jobs:
         run: chmod +x gradlew
 
       - name: Run unit tests
-        run: ./gradlew test --info
-
-      - name: Run integration tests
         run: ./gradlew test --info
 
       - name: Publish test results
@@ -55,7 +56,7 @@ jobs:
         run: |
           echo "## Test Results" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          if [ -f build/test-results/test/*.xml ]; then
+          if [ -d build/test-results/test ] && [ "$(ls -A build/test-results/test/*.xml 2>/dev/null)" ]; then
             echo "✅ Tests completed. Check the artifacts for detailed reports." >> $GITHUB_STEP_SUMMARY
           else
             echo "❌ Tests failed or did not run." >> $GITHUB_STEP_SUMMARY
