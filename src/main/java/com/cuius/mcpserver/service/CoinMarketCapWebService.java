@@ -15,20 +15,19 @@ public class CoinMarketCapWebService {
 
     @Value("${coinmarketcap.api.key:your-api-key-here}")
     private String apiKey;
-    @Value("${coinmarketcap.api.base-url}")
-    private String BASE_URL;
     @Value("${coinmarketcap.api.listings}")
     private String LISTINGS_ENDPOINT;
 
-    public CoinMarketCapWebService(WebClient.Builder webClientBuilder) {
-        this.webClient = webClientBuilder.baseUrl(BASE_URL).build();
+    public CoinMarketCapWebService(WebClient.Builder webClientBuilder,
+                                   @Value("${coinmarketcap.api.base-url}") String baseUrl) {
+        this.webClient = webClientBuilder.baseUrl(baseUrl).build();
     }
 
-    public CoinMarketCapResponse getCoinMarketCapWebResponse(Integer finalLimit) {
+    public CoinMarketCapResponse getCoinMarketCapWebResponse(Integer limit) {
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path(LISTINGS_ENDPOINT)
-                        .queryParam("limit", finalLimit)
+                        .queryParam("limit", limit)
                         .queryParam("convert", "USD")
                         .build())
                 .header("X-CMC_PRO_API_KEY", apiKey)
