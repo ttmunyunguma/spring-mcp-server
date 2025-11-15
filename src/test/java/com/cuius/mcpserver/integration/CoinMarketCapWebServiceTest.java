@@ -1,6 +1,7 @@
-package com.cuius.mcpserver.service;
+package com.cuius.mcpserver.integration;
 
 import com.cuius.mcpserver.dto.CoinMarketCapResponse;
+import com.cuius.mcpserver.service.CoinMarketCapWebService;
 import mockwebserver3.MockResponse;
 import mockwebserver3.MockWebServer;
 import mockwebserver3.RecordedRequest;

@@ -5,7 +5,6 @@ A Spring Boot-based Model Context Protocol (MCP) server that provides cryptocurr
 [![Java](https://img.shields.io/badge/Java-21-orange.svg)](https://openjdk.org/)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.7-brightgreen.svg)](https://spring.io/projects/spring-boot)
 [![Spring AI](https://img.shields.io/badge/Spring%20AI-1.0.3-blue.svg)](https://spring.io/projects/spring-ai)
-[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 ## 📋 Table of Contents
 
@@ -289,15 +288,21 @@ The project includes comprehensive test coverage with both unit and integration 
 ### Run All Tests
 
 ```bash
+./gradlew allTests
+```
+
+### Run Unit Tests
+
+```bash
 ./gradlew test
 ```
 
-### Run Specific Test Class
+### Run Integration Tests
 
 ```bash
-./gradlew test --tests CoinMarketCapToolServiceTest
-./gradlew test --tests CoinMarketCapWebServiceTest
+./gradlew integrationTest 
 ```
+
 
 ### View Test Reports
 
@@ -393,24 +398,6 @@ This server integrates with the [CoinMarketCap Professional API](https://pro.coi
 
 ## 🔧 Troubleshooting
 
-### Common Issues
-
-#### Connection Refused Error
-
-**Problem**: `Connection refused: getsockopt: /[0:0:0:0:0:0:0:1]:80`
-
-**Solution**: This occurs when the WebClient base URL is not properly injected. Ensure your `CoinMarketCapWebService` uses constructor injection:
-
-```java
-public CoinMarketCapWebService(
-        WebClient.Builder webClientBuilder,
-        @Value("${coinmarketcap.api.base-url}") String baseUrl) {
-    this.webClient = webClientBuilder.baseUrl(baseUrl).build();
-}
-```
-
-See [CONNECTION_REFUSED_FIX.md](docs/CONNECTION_REFUSED_FIX.md) for detailed troubleshooting.
-
 #### API Key Issues
 
 **Problem**: 401 Unauthorized error
@@ -438,27 +425,6 @@ logging.level.com.cuius.mcpserver=DEBUG
 logging.level.org.springframework.web.reactive=DEBUG
 ```
 
-## 🤝 Contributing
-
-Contributions are welcome! Please follow these steps:
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-### Development Guidelines
-
-- Follow existing code style and conventions
-- Write tests for new features
-- Update documentation as needed
-- Ensure all tests pass before submitting PR
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
 ## 🙏 Acknowledgments
 
 - [Spring Boot](https://spring.io/projects/spring-boot) - Application framework
@@ -484,4 +450,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-**Built with ❤️ using Spring Boot and Spring AI**
+**Built using Spring Boot and Spring AI**
