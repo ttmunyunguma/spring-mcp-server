@@ -1,9 +1,11 @@
-package com.cuius.mcpserver.service;
+package com.cuius.mcpserver.unit;
 
 import com.cuius.mcpserver.dto.CoinMarketCapResponse;
 import com.cuius.mcpserver.dto.CryptoCurrency;
 import com.cuius.mcpserver.dto.Quote;
 import com.cuius.mcpserver.dto.Status;
+import com.cuius.mcpserver.service.CoinMarketCapToolService;
+import com.cuius.mcpserver.service.CoinMarketCapWebService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
