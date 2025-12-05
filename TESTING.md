@@ -242,54 +242,6 @@ stage('Test') {
 }
 ```
 
-## Troubleshooting
-
-### Tests Not Running
-```bash
-# Clean build and retry
-./gradlew clean test
-```
-
-### MockWebServer Port Conflicts
-The tests use dynamic port allocation, but if you encounter issues:
-```java
-mockWebServer = new MockWebServer();
-mockWebServer.start(8080); // Specify port if needed
-```
-
-### MockWebServer 3.x API Changes
-If you're migrating from MockWebServer 2.x (OkHttp 4.x):
-
-**Old API (v2.x):**
-```java
-mockWebServer.shutdown();  // v2
-new MockResponse().setBody("...").setResponseCode(200);  // v2
-recordedRequest.getPath();  // v2
-```
-
-**New API (v3.x):**
-```java
-mockWebServer.close();  // v3 - implements AutoCloseable
-new MockResponse.Builder().code(200).body("...").build();  // v3 - Builder pattern
-recordedRequest.getRequestUrl().toString();  // v3 - HttpUrl object
-```
-
-Key changes:
-- `shutdown()` → `close()`
-- MockResponse now uses Builder pattern
-- `getPath()` → `getRequestUrl()` (returns HttpUrl)
-- `setResponseCode()` → `.code()`
-- `setBody()` → `.body()`
-- `setBodyDelay()` → `.headersDelay()` or `.bodyDelay()`
-
-### API Key Issues in Tests
-Tests use a mock API key. For integration tests with real API:
-```java
-@TestPropertySource(properties = {
-    "coinmarketcap.api.key=your-real-test-api-key"
-})
-```
-
 ## Best Practices Demonstrated
 
 1. **Test Isolation** - Each test is independent
@@ -298,15 +250,6 @@ Tests use a mock API key. For integration tests with real API:
 4. **Edge Cases** - Tests cover null, empty, and error scenarios
 5. **Mock External Dependencies** - No real API calls in unit tests
 6. **Integration Testing** - Verify HTTP communication separately
-
-## Next Steps
-
-Consider adding:
-- Test coverage reporting (JaCoCo)
-- Parameterized tests for multiple scenarios
-- Performance tests
-- Contract tests (Spring Cloud Contract)
-- Mutation testing (PIT)
 
 ## Resources
 

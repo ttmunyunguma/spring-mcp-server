@@ -74,7 +74,7 @@ The project follows a clean architecture pattern with the following layers:
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/spring-mcp-server.git
+git clone https://github.com/ttmunyunguma/spring-mcp-server.git
 cd spring-mcp-server
 ```
 
@@ -92,14 +92,6 @@ coinmarketcap.api.key=YOUR_API_KEY_HERE
 ./gradlew build
 ```
 
-### 4. Run the Server
-
-```bash
-./gradlew bootRun
-```
-
-The server will start and listen for MCP protocol requests on the configured port.
-
 ## ⚙️ Configuration
 
 ### Application Properties
@@ -107,10 +99,6 @@ The server will start and listen for MCP protocol requests on the configured por
 Located in `src/main/resources/application.properties`:
 
 ```properties
-# Application Settings
-spring.application.name=coinmarketcap-mcp-server
-server.port=8590
-
 # MCP Server Configuration
 spring.ai.mcp.server.name=coinmarketcap-mcp-server
 spring.ai.mcp.server.type=sync
@@ -434,19 +422,9 @@ logging.level.org.springframework.web.reactive=DEBUG
 
 ## 📞 Support
 
-- **Issues**: [GitHub Issues](https://github.com/yourusername/spring-mcp-server/issues)
-- **Documentation**: [Project Wiki](https://github.com/yourusername/spring-mcp-server/wiki)
+- **Issues**: [GitHub Issues](https://github.com/ttmunyunguma/spring-mcp-server/issues)
+- **Documentation**: [Project Wiki](https://github.com/ttmunyunguma/spring-mcp-server/wiki)
 - **CoinMarketCap API**: [API Documentation](https://coinmarketcap.com/api/documentation/v1/)
-
-## 🗺️ Roadmap
-
-- [ ] Add more CoinMarketCap endpoints support
-- [ ] Implement persistent caching with Redis
-- [ ] Add WebSocket support for real-time updates
-- [ ] Create Docker image for easy deployment
-- [ ] Add GraphQL API support
-- [ ] Implement rate limiting and request throttling
-- [ ] Add metrics and monitoring with Spring Actuator
 
 ---
 
