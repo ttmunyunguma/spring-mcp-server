@@ -18,9 +18,6 @@ A Spring Boot-based Model Context Protocol (MCP) server that provides cryptocurr
 - [Testing](#testing)
 - [Project Structure](#project-structure)
 - [API Integration](#api-integration)
-- [Troubleshooting](#troubleshooting)
-- [Contributing](#contributing)
-- [License](#license)
 
 ## ✨ Features
 
